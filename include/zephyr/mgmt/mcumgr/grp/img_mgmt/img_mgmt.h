@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018-2021 mcumgr authors
- * Copyright (c) 2022 Nordic Semiconductor ASA
+ * Copyright (c) 2022-2023 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -142,6 +142,13 @@ int img_mgmt_my_version(struct image_version *ver);
  * @return Non-negative on success, negative value on error.
  */
 int img_mgmt_ver_str(const struct image_version *ver, char *dst);
+
+/**
+ * @brief Get active, running application slot number.
+ *
+ * @return Non-negative slot number
+ */
+int img_mgmt_active_slot(void);
 
 /**
  * @brief Check if the image slot is in use.

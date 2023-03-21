@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018-2021 mcumgr authors
- * Copyright (c) 2022 Nordic Semiconductor ASA
+ * Copyright (c) 2022-2023 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -23,7 +23,6 @@
 #include <zephyr/mgmt/mcumgr/grp/img_mgmt/image.h>
 
 #include <mgmt/mcumgr/util/zcbor_bulk.h>
-#include <mgmt/mcumgr/grp/img_mgmt/img_mgmt_config.h>
 #include <mgmt/mcumgr/grp/img_mgmt/img_mgmt_impl.h>
 #include <mgmt/mcumgr/grp/img_mgmt/img_mgmt_priv.h>
 
@@ -33,6 +32,17 @@
 
 #ifdef CONFIG_MCUMGR_MGMT_NOTIFICATION_HOOKS
 #include <zephyr/mgmt/mcumgr/mgmt/callbacks.h>
+#endif
+
+#define FIXED_PARTITION_IS_CHOSEN_CODE_PARTITION(label)	\
+	DT_SAME_NODE(DT_NODELABEL(label), DT_CHOSEN(zephyr_code_partition))
+
+#if (FIXED_PARTITION_IS_CHOSEN_CODE_PARTITION(slot0_partition))
+#define IMG_MGMT_BOOT_CURR_SLOT 0
+#elif (FIXED_PARTITION_IS_CHOSEN_CODE_PARTITION(slot1_partition))
+#define IMG_MGMT_BOOT_CURR_SLOT 1
+#else
+#error Active partition other than slot0_partition or slot1_partition is not supported yet.
 #endif
 
 LOG_MODULE_REGISTER(mcumgr_img_grp, CONFIG_MCUMGR_GRP_IMG_LOG_LEVEL);
@@ -76,6 +86,11 @@ img_mgmt_find_tlvs(int slot, size_t *start_off, size_t *end_off,
 	*end_off = *start_off + tlv_info.it_tlv_tot;
 
 	return 0;
+}
+
+int img_mgmt_active_slot(void)
+{
+	return IMG_MGMT_BOOT_CURR_SLOT;
 }
 
 /*
@@ -620,7 +635,7 @@ end:
 int
 img_mgmt_my_version(struct image_version *ver)
 {
-	return img_mgmt_read_info(IMG_MGMT_BOOT_CURR_SLOT, ver, NULL, NULL);
+	return img_mgmt_read_info(img_mgmt_active_slot(), ver, NULL, NULL);
 }
 
 static const struct mgmt_handler img_mgmt_handlers[] = {
