@@ -184,7 +184,7 @@ manifest:
         - crypto
     - name: mcuboot
       remote: mcutools
-      revision: pull/1671/head
+      revision: pull/1676/head
       path: bootloader/mcuboot
     - name: mipi-sys-t
       path: modules/debug/mipi-sys-t
