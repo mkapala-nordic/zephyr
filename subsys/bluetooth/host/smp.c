@@ -1653,7 +1653,7 @@ static void smp_pairing_complete(struct bt_smp *smp, uint8_t status)
 			bt_keys_show_sniffer_info(conn->le.keys, NULL);
 		}
 
-		if (bond_flag) {
+		if (bond_flag && conn->le.keys) {
 			bt_keys_store(conn->le.keys);
 		}
 
